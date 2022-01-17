@@ -5,7 +5,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDebug>
-
+#include <QNetworkConfigurationManager>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Server; }
@@ -31,5 +31,6 @@ private:
     Ui::Server *ui;
     QTcpServer *server;
     QVector<QTcpSocket*>*allClients;
+    QNetworkConfigurationManager *mana;
 };
 #endif // SERVER_H

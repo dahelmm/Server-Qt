@@ -15,6 +15,11 @@ Server::~Server()
 
 void Server::startServer()
 {
+    mana = new QNetworkConfigurationManager();
+    if(mana->isOnline())
+    {
+        ui->tE_info->append("Есть интернет соединение!");
+    }
     allClients = new QVector<QTcpSocket*>;
 
     server = new QTcpServer();
@@ -24,11 +29,11 @@ void Server::startServer()
 
     if(server->listen(QHostAddress::Any,8001))
     {
-        qDebug()<<"Сервер запущен, порт 8001";
+        ui->tE_info->append("Сервер запущен, порт 8001");
     }
     else
     {
-        qDebug()<<"Сервер не запущун. Ошибка:"+server->errorString();
+        ui->tE_info->append("Сервер не запущен. Ошибка:"+server->errorString());
     }
 }
 
@@ -56,7 +61,7 @@ void Server::newClientConnection()
     connect(client,&QTcpSocket::stateChanged,this,&Server::socketStateChanged);
 
     allClients->push_back(client);
-    qDebug()<<"Сокет подключился к "+ipAddress+":"+QString::number(port);
+    ui->tE_info->append("Сокет подключился к "+ipAddress+":"+QString::number(port));
 
 }
 
@@ -66,7 +71,7 @@ void Server::socketDisconnected()
     QString socketIpAddress = client->peerAddress().toString();
     int port=client->peerPort();
 
-    qDebug()<<"Сокет отключился от "+socketIpAddress+":"+QString::number(port);
+    ui->tE_info->append("Сокет отключился от "+socketIpAddress+":"+QString::number(port));
 }
 
 void Server::socketReadyRead()
@@ -75,7 +80,7 @@ void Server::socketReadyRead()
     QString socketIpAddress = client->peerAddress().toString();
     int port = client->peerPort();
     QString data = QString(client->readAll());
-    qDebug()<<"Сообщение: "+data+" (" +socketIpAddress+":"+QString::number(port)+")";
+    ui->tE_info->append("Сообщение: "+data+" (" +socketIpAddress+":"+QString::number(port)+")");
 
     sendMessageToClients(data);
 }
@@ -100,6 +105,6 @@ void Server::socketStateChanged(QAbstractSocket::SocketState state)
         desc = "Сокет вот-вот закроется (возможно, данные ожидают записи).";
     else if (state == QAbstractSocket::ListeningState)
         desc = "Только для внутреннего использования.";
-    qDebug()<<"Состояние сокета изменено ("+socketIpAddress+":"+QString::number(port)+"):"+desc;
+    ui->tE_info->append("Состояние сокета изменено ("+socketIpAddress+":"+QString::number(port)+"):"+desc);
 }
 
